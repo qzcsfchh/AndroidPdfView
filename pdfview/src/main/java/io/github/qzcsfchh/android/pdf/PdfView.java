@@ -1,4 +1,4 @@
-package me.android.view.pdf;
+package io.github.qzcsfchh.android.pdf;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -51,9 +51,9 @@ public class PdfView extends FrameLayout {
     private Handler mRenderHandler;
     private int mCurrentIndex = 0;
     private final AtomicReference<PdfRenderer> mPdfRenderer = new AtomicReference<>();
-    private PdfPageAdapter mAdapter;
+    private final PdfPageAdapter mAdapter;
     private PdfRendererSupplier mRendererSupplier;
-    private ViewPager2 mViewPager2;
+    private final ViewPager2 mViewPager2;
 
     public PdfView(@NonNull Context context) {
         this(context,null);

@@ -1,4 +1,4 @@
-package me.android.view.pdf;
+package io.github.qzcsfchh.android.pdf.test;
 
 import android.content.Context;
 import android.util.AttributeSet;

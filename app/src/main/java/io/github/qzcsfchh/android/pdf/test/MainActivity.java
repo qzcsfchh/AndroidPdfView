@@ -1,4 +1,4 @@
-package me.android.view.pdf;
+package io.github.qzcsfchh.android.pdf.test;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import io.github.qzcsfchh.android.pdf.PdfView;
 
 public class MainActivity extends AppCompatActivity {
 
