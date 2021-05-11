@@ -2,6 +2,7 @@ package io.github.qzcsfchh.android.pdf;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -54,6 +55,8 @@ public class PdfView extends FrameLayout {
     private final PdfPageAdapter mAdapter;
     private PdfRendererSupplier mRendererSupplier;
     private final ViewPager2 mViewPager2;
+    private TextView mTvCounter;
+    private boolean mShowIndicator;
 
     public PdfView(@NonNull Context context) {
         this(context,null);
@@ -65,44 +68,89 @@ public class PdfView extends FrameLayout {
 
     public PdfView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PdfView, defStyleAttr, 0);
+        int orientation = ta.getInt(R.styleable.PdfView_android_orientation, ViewPager2.ORIENTATION_VERTICAL);
+        boolean showIndicator = ta.getBoolean(R.styleable.PdfView_pdfShowIndicator, true);
+        ta.recycle();
         mViewPager2 = new ViewPager2(context);
-        mViewPager2.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
+        setOrientation(orientation);
         addView(mViewPager2, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        final TextView tvCounter = new TextView(context);
+        setShowIndicator(showIndicator);
+        mViewPager2.registerOnPageChangeCallback(mOnPageChangeCallback);
+        mAdapter = new PdfPageAdapter();
+        mAdapter.registerAdapterDataObserver(mDataObserver);
+        mViewPager2.setAdapter(mAdapter);
+    }
+
+    private final ViewPager2.OnPageChangeCallback mOnPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+        @Override
+        public void onPageSelected(int position) {
+            mCurrentIndex = position;
+            if (mTvCounter != null) {
+                mTvCounter.setText(String.format(Locale.getDefault(), "%d/%d", mCurrentIndex + 1, mAdapter.getItemCount()));
+            }
+        }
+    };
+
+    private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            if (mTvCounter != null && mTvCounter.getVisibility() != View.VISIBLE) {
+                mTvCounter.setVisibility(View.VISIBLE);
+                final int itemCount = mAdapter.getItemCount();
+                mTvCounter.setText(String.format(Locale.getDefault(), "%d/%d", itemCount > 0 ? mCurrentIndex + 1 : 0, itemCount));
+            }
+        }
+    };
+
+    public void registerOnPageChangeCallback(ViewPager2.OnPageChangeCallback callback){
+        mViewPager2.registerOnPageChangeCallback(callback);
+    }
+
+    public void unregisterOnPageChangeCallback(ViewPager2.OnPageChangeCallback callback){
+        mViewPager2.unregisterOnPageChangeCallback(callback);
+    }
+
+    public boolean isShowIndicator() {
+        return mShowIndicator;
+    }
+
+    public void setShowIndicator(boolean showIndicator) {
+        mShowIndicator = showIndicator;
+        if (mShowIndicator && mTvCounter == null) {
+            mTvCounter = createDefaultIndicator();
+            mTvCounter.setVisibility(View.GONE);
+            addView(mTvCounter);
+        } else if (!mShowIndicator && mTvCounter != null) {
+            removeView(mTvCounter);
+            mTvCounter = null;
+        }
+    }
+
+    public void setOrientation(int orientation){
+        mViewPager2.setOrientation(orientation);
+    }
+
+    public int getOrientation(){
+        return mViewPager2.getOrientation();
+    }
+
+    private TextView createDefaultIndicator(){
+        TextView tvCounter = new TextView(getContext());
         tvCounter.setPadding(dp2px(8), dp2px(3), dp2px(8), dp2px(3));
         tvCounter.setTextSize(13f);
         tvCounter.setTextColor(Color.WHITE);
         tvCounter.setGravity(Gravity.CENTER);
         GradientDrawable drawable = new GradientDrawable();
-        drawable.setCornerRadius(dp2px(19) / 2f);
-        drawable.setColor(Color.GRAY);
+        drawable.setCornerRadius(dp2px(21) / 2f);
+        drawable.setColor(Color.parseColor("#66000000"));
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         int dp16 = dp2px(16);
         layoutParams.setMargins(dp16, dp16, dp16, dp16);
         layoutParams.gravity = Gravity.START;
         tvCounter.setLayoutParams(layoutParams);
         tvCounter.setBackground(drawable);
-        addView(tvCounter);
-        tvCounter.setVisibility(View.GONE);
-        mViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                mCurrentIndex = position;
-                tvCounter.setText(String.format(Locale.getDefault(), "%d/%d", mCurrentIndex+1, mAdapter.getItemCount()));
-            }
-        });
-        mAdapter = new PdfPageAdapter();
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                if (tvCounter.getVisibility()!= View.VISIBLE) {
-                    tvCounter.setVisibility(View.VISIBLE);
-                    final int itemCount = mAdapter.getItemCount();
-                    tvCounter.setText(String.format(Locale.getDefault(), "%d/%d", itemCount > 0 ? mCurrentIndex + 1 : 0, itemCount));
-                }
-            }
-        });
-        mViewPager2.setAdapter(mAdapter);
+        return tvCounter;
     }
 
     @Override

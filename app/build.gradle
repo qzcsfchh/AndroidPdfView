@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId "me.android.view.pdf"
+        applicationId "io.github.qzcsfchh.android.pdf.test"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
