@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 FileOutputStream fos = null;
                 try {
                     File cache = getExternalFilesDir("cache");
-                    final File file = new File(cache, "mm.pdf");
+                    final File file = new File(cache, "test.pdf");
                     if (!file.exists()) {
                         open = getAssets().open(file.getName());
                         fos = new FileOutputStream(file);
