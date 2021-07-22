@@ -32,21 +32,14 @@ dependencies {
 apply plugin: 'maven'
 boolean isRelease = true
 boolean isLocal = false
-String pomVersion = android.defaultConfig.versionName + (isRelease ? '' : '-SNAPSHOT')
 
 uploadArchives{
     repositories{
         mavenDeployer {
-            if (isLocal) {
-                repository(url: uri('F:\\maven_repo'))
-            } else {
-                repository(url: 'http://af.hikvision.com.cn/artifactory/maven-BBG-snapshot') {
-                    authentication userName: 'bbg-dev', password: 'helloworld'
-                }
-            }
-            pom.groupId = 'hik.common.ebg'
+            mavenLocal()
+            pom.groupId = 'io.github.qzcsfchh'
             pom.artifactId = 'pdfview'
-            pom.version = pomVersion
+            pom.version = android.defaultConfig.versionName + (isRelease ? '' : '-SNAPSHOT')
             println "implementation \'${pom.groupId}:${pom.artifactId}:${pom.version}\'"
         }
     }
