@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'com.github.dcendents.android-maven'
 android {
     compileSdkVersion 28
 
@@ -29,18 +29,18 @@ dependencies {
 
 }
 
-apply plugin: 'maven'
-boolean isRelease = true
-boolean isLocal = false
-
-uploadArchives{
-    repositories{
-        mavenDeployer {
-            mavenLocal()
-            pom.groupId = 'io.github.qzcsfchh'
-            pom.artifactId = 'pdfview'
-            pom.version = android.defaultConfig.versionName + (isRelease ? '' : '-SNAPSHOT')
-            println "implementation \'${pom.groupId}:${pom.artifactId}:${pom.version}\'"
-        }
-    }
-}
+//apply plugin: 'maven'
+//boolean isRelease = true
+//boolean isLocal = false
+//
+//uploadArchives{
+//    repositories{
+//        mavenDeployer {
+//            mavenLocal()
+//            pom.groupId = 'io.github.qzcsfchh'
+//            pom.artifactId = 'pdfview'
+//            pom.version = android.defaultConfig.versionName + (isRelease ? '' : '-SNAPSHOT')
+//            println "implementation \'${pom.groupId}:${pom.artifactId}:${pom.version}\'"
+//        }
+//    }
+//}
